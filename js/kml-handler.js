@@ -141,7 +141,7 @@ class KMLHandler {
      */
     createPopup(feature) {
         const props = feature.properties;
-        
+
         // Calcular centro del feature
         let centerLat, centerLng;
         if (feature.geometry.type === 'Point') {

@@ -1078,6 +1078,9 @@ class MobileInterface {
                 demoBtn.disabled = false;
                 demoBtn.innerHTML = '<i class="bi bi-play-circle"></i> Cargar Datos Demo';
             }
+
+            // Colapsar bottom sheet para ver el mapa
+            this.collapseBottomSheet();
         }, 1000);
     }
 
