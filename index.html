@@ -1187,17 +1187,11 @@
                 if (window.map) {
                     const kmlHandler = new KMLHandler(window.map);
                     window.kmlHandler = kmlHandler;
-
-                    const kmlUploadPanel = new KMLUploadPanel(kmlHandler);
-                    window.kmlUploadPanel = kmlUploadPanel;
                 }
 
-                // Auto-select PRESAS on load
-                const instrumentSelect = document.getElementById('instrument-select');
-                if (instrumentSelect) {
-                    instrumentSelect.value = 'PRESAS';
-                    const event = new Event('change', { bubbles: true });
-                    instrumentSelect.dispatchEvent(event);
+                // Inicializar handlers de KML en menú móvil
+                if (window.mobileInterface) {
+                    window.mobileInterface.initializeKMLHandlers();
                 }
             }, 1000);
         });

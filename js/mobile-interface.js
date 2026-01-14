@@ -95,6 +95,10 @@ class MobileInterface {
                 <i class="bi bi-search"></i>
                 <span>Buscar</span>
             </button>
+            <button class="mobile-floating-menu-item" data-tab="data">
+                <i class="bi bi-cloud-upload"></i>
+                <span>Cargar Datos</span>
+            </button>
             <button class="mobile-floating-menu-item" data-action="refresh">
                 <i class="bi bi-arrow-clockwise"></i>
                 <span>Actualizar datos</span>
@@ -176,6 +180,7 @@ class MobileInterface {
             <div class="bottom-sheet-tabs">
                 <button class="bottom-sheet-tab active" data-tab="controls">Controles</button>
                 <button class="bottom-sheet-tab" data-tab="layers">Capas</button>
+                <button class="bottom-sheet-tab" data-tab="data">Datos</button>
                 <button class="bottom-sheet-tab" data-tab="info">Información</button>
                 <button class="bottom-sheet-tab" data-tab="about">Acerca de</button>
             </div>
@@ -206,6 +211,47 @@ class MobileInterface {
                 <div class="bottom-sheet-tab-content" data-content="layers" style="display: none;">
                     <div id="mobile-layers-container">
                         <p style="color: #666; padding: 1rem;">Selecciona un mapa para ver las capas disponibles.</p>
+                    </div>
+                </div>
+                
+                <!-- Tab: Datos -->
+                <div class="bottom-sheet-tab-content" data-content="data" style="display: none;">
+                    <div id="mobile-data-container" style="padding: 1rem; space-y: 1rem;">
+                        <!-- Demo Section -->
+                        <div style="margin-bottom: 1.5rem;">
+                            <h4 style="font-size: 0.75rem; font-weight: bold; color: var(--color-gobmx-guinda); text-transform: uppercase; letter-spacing: 1px; margin: 0 0 0.75rem 0;">Demostración</h4>
+                            <button class="mobile-data-demo-btn" style="width: 100%; padding: 0.75rem; background: var(--color-gobmx-guinda); color: white; border: none; border-radius: 8px; font-size: 0.9rem; font-weight: 600; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 0.5rem;">
+                                <i class="bi bi-play-circle"></i>
+                                Cargar Datos Demo
+                            </button>
+                            <p style="font-size: 0.75rem; color: #666; margin: 0.5rem 0 0 0;">3 proyectos de ejemplo para explorar</p>
+                        </div>
+
+                        <div style="height: 1px; background: #ddd; margin: 1rem 0;"></div>
+
+                        <!-- KML Upload Section -->
+                        <div>
+                            <h4 style="font-size: 0.75rem; font-weight: bold; color: var(--color-gobmx-guinda); text-transform: uppercase; letter-spacing: 1px; margin: 0 0 0.75rem 0;">Cargar KML</h4>
+                            
+                            <div class="mobile-kml-dropzone" style="border: 2px dashed #ccc; border-radius: 8px; padding: 1rem; text-align: center; cursor: pointer; transition: all 0.3s;" ondrop="mobileInterface.handleKMLDrop(event)" ondragover="event.preventDefault(); this.style.borderColor='var(--color-gobmx-guinda)'; this.style.backgroundColor='rgba(155, 34, 71, 0.05)';" ondragleave="this.style.borderColor='#ccc'; this.style.backgroundColor='transparent';">
+                                <i class="bi bi-cloud-upload" style="font-size: 1.5rem; color: #999; display: block; margin-bottom: 0.5rem;"></i>
+                                <p style="font-size: 0.8rem; color: #666; margin: 0.25rem 0;">
+                                    <strong>Arrastra un KML</strong> o
+                                </p>
+                                <label style="font-size: 0.8rem; color: var(--color-gobmx-guinda); font-weight: 600; cursor: pointer;">
+                                    selecciona uno
+                                    <input type="file" class="mobile-kml-input" accept=".kml" style="display: none;">
+                                </label>
+                            </div>
+                        </div>
+
+                        <!-- Loaded Layers -->
+                        <div id="mobile-loaded-layers" style="display: none; margin-top: 1rem; padding-top: 1rem; border-top: 1px solid #ddd;">
+                            <h4 style="font-size: 0.75rem; font-weight: bold; color: var(--color-gobmx-guinda); text-transform: uppercase; letter-spacing: 1px; margin: 0 0 0.75rem 0;">Capas Cargadas</h4>
+                            <div id="mobile-layer-items" style="display: flex; flex-direction: column; gap: 0.5rem;">
+                                <!-- Dinámico -->
+                            </div>
+                        </div>
                     </div>
                 </div>
                 
@@ -839,6 +885,214 @@ class MobileInterface {
         document.querySelectorAll('.mobile-menu-btn, .mobile-search-btn, .mobile-action-buttons, .mobile-layers-btn, .mobile-location-btn, .mobile-bottom-sheet, .mobile-side-drawer, .mobile-drawer-overlay, .mobile-search-modal, .mobile-map-legend').forEach(el => {
             el.remove();
         });
+    }
+
+    // Métodos para gestión de KML
+    initializeKMLHandlers() {
+        // Botón para cargar datos demo
+        const demoBtn = document.querySelector('.mobile-data-demo-btn');
+        if (demoBtn) {
+            demoBtn.addEventListener('click', () => this.loadDemoData());
+        }
+
+        // Drag & drop para KML
+        const dropZone = document.querySelector('.mobile-kml-dropzone');
+        if (dropZone) {
+            dropZone.addEventListener('drop', (e) => this.handleKMLDrop(e));
+            dropZone.addEventListener('dragover', (e) => {
+                e.preventDefault();
+                dropZone.style.borderColor = 'var(--color-gobmx-guinda)';
+                dropZone.style.backgroundColor = 'rgba(155, 34, 71, 0.05)';
+            });
+            dropZone.addEventListener('dragleave', () => {
+                dropZone.style.borderColor = '#ccc';
+                dropZone.style.backgroundColor = 'transparent';
+            });
+        }
+
+        // Input de archivo KML
+        const fileInput = document.querySelector('.mobile-kml-input');
+        if (fileInput) {
+            fileInput.addEventListener('change', (e) => this.handleKMLFileSelect(e));
+        }
+    }
+
+    handleKMLDrop(e) {
+        e.preventDefault();
+        const files = e.dataTransfer.files;
+        if (files.length > 0) {
+            this.processKMLFile(files[0]);
+        }
+    }
+
+    handleKMLFileSelect(e) {
+        const files = e.target.files;
+        if (files.length > 0) {
+            this.processKMLFile(files[0]);
+        }
+    }
+
+    async processKMLFile(file) {
+        if (!file.name.toLowerCase().endsWith('.kml')) {
+            alert('Por favor selecciona un archivo KML');
+            return;
+        }
+
+        if (window.kmlHandler) {
+            const dropZone = document.querySelector('.mobile-kml-dropzone');
+            if (dropZone) {
+                dropZone.innerHTML = '<div style="text-align: center; padding: 1rem;"><div class="spinner" style="margin: 0 auto; width: 20px; height: 20px; border: 2px solid #ccc; border-top-color: var(--color-gobmx-guinda); border-radius: 50%; animation: spin 1s linear infinite;"></div><p style="font-size: 0.8rem; color: #666; margin-top: 0.5rem;">Procesando...</p></div>';
+            }
+
+            try {
+                const geojson = await window.kmlHandler.loadKML(file);
+                
+                const layerName = file.name.replace('.kml', '');
+                window.kmlHandler.addGeoJSON(geojson, layerName);
+
+                // Zoom a los datos
+                if (window.map && window.kmlHandler.layers[layerName]) {
+                    const bounds = window.kmlHandler.layers[layerName].getBounds();
+                    if (bounds.isValid()) {
+                        window.map.fitBounds(bounds, { padding: [50, 50] });
+                    }
+                }
+
+                // Actualizar UI
+                this.updateMobileLayersList();
+                this.showKMLStatus(`${geojson.features.length} features cargados`, 'success');
+
+            } catch (error) {
+                this.showKMLStatus('Error: ' + error.message, 'error');
+            }
+
+            // Restaurar dropzone
+            setTimeout(() => {
+                const fileInput = document.querySelector('.mobile-kml-input');
+                if (fileInput) fileInput.value = '';
+                if (dropZone) {
+                    dropZone.innerHTML = '<i class="bi bi-cloud-upload" style="font-size: 1.5rem; color: #999; display: block; margin-bottom: 0.5rem;"></i><p style="font-size: 0.8rem; color: #666; margin: 0.25rem 0;"><strong>Arrastra un KML</strong> o</p><label style="font-size: 0.8rem; color: var(--color-gobmx-guinda); font-weight: 600; cursor: pointer;">selecciona uno<input type="file" class="mobile-kml-input" accept=".kml" style="display: none;"></label>';
+                    this.initializeKMLHandlers();
+                }
+            }, 1500);
+        }
+    }
+
+    loadDemoData() {
+        if (!window.kmlHandler) return;
+
+        const demoBtn = document.querySelector('.mobile-data-demo-btn');
+        if (demoBtn) {
+            demoBtn.disabled = true;
+            demoBtn.innerHTML = '<i class="bi bi-hourglass-split" style="animation: spin 1s linear infinite;"></i> Cargando...';
+        }
+
+        const demoData = window.KMLHandler.createDemoData();
+
+        setTimeout(() => {
+            window.kmlHandler.addGeoJSON(
+                demoData,
+                'demo-projects',
+                {
+                    color: '#9B2247',
+                    weight: 2,
+                    opacity: 0.8,
+                    fillOpacity: 0.5
+                }
+            );
+
+            // Zoom
+            if (window.map && window.kmlHandler.layers['demo-projects']) {
+                const bounds = window.kmlHandler.layers['demo-projects'].getBounds();
+                if (bounds.isValid()) {
+                    window.map.fitBounds(bounds, { padding: [50, 50] });
+                }
+            }
+
+            this.updateMobileLayersList();
+            this.showKMLStatus(`${demoData.features.length} proyectos cargados`, 'success');
+
+            if (demoBtn) {
+                demoBtn.disabled = false;
+                demoBtn.innerHTML = '<i class="bi bi-play-circle"></i> Cargar Datos Demo';
+            }
+        }, 1000);
+    }
+
+    updateMobileLayersList() {
+        const layersList = document.getElementById('mobile-loaded-layers');
+        const layerItems = document.getElementById('mobile-layer-items');
+
+        if (!window.kmlHandler) return;
+
+        const layers = Object.keys(window.kmlHandler.layers);
+
+        if (layers.length === 0) {
+            if (layersList) layersList.style.display = 'none';
+            return;
+        }
+
+        if (layersList) layersList.style.display = 'block';
+
+        if (layerItems) {
+            layerItems.innerHTML = layers.map(name => `
+                <div style="display: flex; align-items: center; justify-content: space-between; padding: 0.5rem; background: #f5f5f5; border-radius: 6px; font-size: 0.85rem;">
+                    <div style="display: flex; align-items: center; gap: 0.5rem; flex: 1;">
+                        <span style="width: 8px; height: 8px; border-radius: 50%; background: var(--color-gobmx-guinda);"></span>
+                        <span style="color: #333;">${name}</span>
+                    </div>
+                    <button onclick="mobileInterface.removeKMLLayer('${name}')" style="background: none; border: none; color: #999; cursor: pointer; padding: 0.25rem;">
+                        <i class="bi bi-x" style="font-size: 1rem;"></i>
+                    </button>
+                </div>
+            `).join('');
+        }
+    }
+
+    removeKMLLayer(name) {
+        if (window.kmlHandler && window.kmlHandler.layers[name]) {
+            window.map.removeLayer(window.kmlHandler.layers[name]);
+            delete window.kmlHandler.layers[name];
+            this.updateMobileLayersList();
+            this.showKMLStatus(`Capa "${name}" removida`, 'info');
+        }
+    }
+
+    showKMLStatus(message, type = 'info') {
+        // Crear alerta temporal
+        const alert = document.createElement('div');
+        alert.style.cssText = `
+            position: fixed;
+            bottom: 100px;
+            left: 50%;
+            transform: translateX(-50%);
+            padding: 1rem;
+            border-radius: 8px;
+            font-size: 0.9rem;
+            font-weight: 600;
+            z-index: 1000;
+            animation: slideUp 0.3s ease-out;
+            max-width: 80%;
+        `;
+
+        const colors = {
+            success: { bg: '#d4edda', color: '#155724', border: '#c3e6cb' },
+            error: { bg: '#f8d7da', color: '#721c24', border: '#f5c6cb' },
+            info: { bg: '#d1ecf1', color: '#0c5460', border: '#bee5eb' }
+        };
+
+        const style = colors[type] || colors.info;
+        alert.style.backgroundColor = style.bg;
+        alert.style.color = style.color;
+        alert.style.border = `1px solid ${style.border}`;
+        alert.textContent = message;
+
+        document.body.appendChild(alert);
+
+        setTimeout(() => {
+            alert.style.animation = 'slideDown 0.3s ease-in';
+            setTimeout(() => alert.remove(), 300);
+        }, 2500);
     }
 }
 

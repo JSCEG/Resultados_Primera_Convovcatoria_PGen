@@ -145,30 +145,44 @@ class KMLHandler {
             <div class="popup-content">
                 <h4 class="font-bold text-primary mb-2">${props.name || 'Proyecto'}</h4>
                 <p class="text-xs text-gray-600 mb-3">${props.description || ''}</p>
-                <button class="px-3 py-1 bg-primary text-white text-xs rounded hover:bg-primary/90 transition-colors" 
-                    onclick="projectDetailModal.open({
-                        id: '${props.id || 'DEMO-001'}',
-                        name: '${props.name || 'Proyecto Demo'}',
-                        location: '${props.location || 'Ubicación'}',
-                        status: 'En Proceso',
-                        description: '${props.description || 'Descripción del proyecto'}',
-                        coordinates: {
-                            lat: ${feature.geometry.coordinates[1]},
-                            lng: ${feature.geometry.coordinates[0]}
-                        },
-                        specs: {
-                            'Capacidad': '150.5 MW',
-                            'Área': '420 Ha',
-                            'Inversión': '85.2M USD'
-                        },
-                        contact: {
-                            name: 'Responsable del Proyecto',
-                            company: 'Empresa Operadora'
-                        }
-                    })">
-                    <span class="material-icons-round text-xs">analytics</span>
-                    Ejecutar Análisis
-                </button>
+                <div style="display: flex; gap: 0.5rem;">
+                    <button class="popup-btn-info" style="flex: 1; padding: 0.5rem; background: #1E5B4F; color: white; border: none; border-radius: 4px; text-align: center; cursor: pointer; font-size: 0.75rem; font-weight: 600;" 
+                        onclick="projectDetailModal.open({
+                            id: '${props.id || 'DEMO-001'}',
+                            name: '${props.name || 'Proyecto Demo'}',
+                            location: '${props.location || 'Ubicación'}',
+                            status: 'En Proceso',
+                            description: '${props.description || 'Descripción del proyecto'}',
+                            coordinates: {
+                                lat: ${feature.geometry.coordinates[1]},
+                                lng: ${feature.geometry.coordinates[0]}
+                            },
+                            specs: {
+                                'Capacidad': '150.5 MW',
+                                'Área': '420 Ha',
+                                'Inversión': '85.2M USD'
+                            },
+                            contact: {
+                                name: 'Responsable del Proyecto',
+                                company: 'Empresa Operadora'
+                            }
+                        })">
+                        <i class="material-icons-round" style="font-size: 0.9rem; vertical-align: middle;">info</i>
+                        <span style="margin-left: 0.25rem;">Información</span>
+                    </button>
+                    <button class="popup-btn-analysis" style="flex: 1; padding: 0.5rem; background: var(--color-gobmx-guinda); color: white; border: none; border-radius: 4px; text-align: center; cursor: pointer; font-size: 0.75rem; font-weight: 600;" 
+                        onclick="projectDetailModal.openAnalysis({
+                            id: '${props.id || 'DEMO-001'}',
+                            name: '${props.name || 'Proyecto Demo'}',
+                            coordinates: {
+                                lat: ${feature.geometry.coordinates[1]},
+                                lng: ${feature.geometry.coordinates[0]}
+                            }
+                        })">
+                        <i class="material-icons-round" style="font-size: 0.9rem; vertical-align: middle;">analytics</i>
+                        <span style="margin-left: 0.25rem;">Análisis</span>
+                    </button>
+                </div>
             </div>
         `;
         return html;

@@ -213,6 +213,18 @@ class ProjectDetailModal {
         this.populateProjectData(project);
         this.modal.style.display = 'flex';
         document.body.style.overflow = 'hidden';
+        this.switchTab('general');
+    }
+
+    openAnalysis(project) {
+        this.currentProject = project;
+        this.modal.style.display = 'flex';
+        document.body.style.overflow = 'hidden';
+        this.switchTab('analysis');
+        // Auto-run analysis
+        setTimeout(() => {
+            this.runLayerAnalysis();
+        }, 300);
     }
 
     close() {
