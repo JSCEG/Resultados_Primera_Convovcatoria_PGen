@@ -6,21 +6,19 @@
     <title>Mapas Dinámicos de Presas - SNIEn</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <script src="https://cdn.tailwindcss.com?plugins=forms,typography"></script>
-    <link
-        href="https://fonts.googleapis.com/css2?family=Noto+Sans:ital,wght@0,400;0,700;1,400;1,700&family=Merriweather:wght@400;700&display=swap"
-        rel="stylesheet" />
-    <link href="https://fonts.googleapis.com/icon?family=Material+Icons+Round" rel="stylesheet" />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
-        href="https://fonts.googleapis.com/css2?family=Noto+Sans:ital,wght@0,400;0,700;1,400;1,700&family=Merriweather:wght@400;700&display=swap"
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Noto+Sans:ital,wght@0,400;0,700;1,400;1,700&family=Merriweather:wght@700&display=swap"
         rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons+Round" rel="stylesheet" />
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
     <link rel="stylesheet" href="https://cdn.maptiler.com/maptiler-sdk-js/v3.6.1/maptiler-sdk.css" />
     <link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@1.5.3/dist/MarkerCluster.css" />
     <link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@1.5.3/dist/MarkerCluster.Default.css" />
     <link rel="stylesheet" href="css/main.css" />
     <link rel="stylesheet" href="css/presas-popup.css" />
+    <link rel="stylesheet" href="css/popup-refined.css" />
     <link rel="stylesheet" href="css/mobile-responsive.css" />
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" />
 
@@ -30,25 +28,32 @@
             theme: {
                 extend: {
                     colors: {
-                        primary: "#9B2247",
-                        secondary: "#A57F2C",
-                        accent: "#1E5B4F",
-                        "background-light": "#FFFFFF",
-                        "background-dark": "#111827",
+                        primary: "#9D2449",
+                        "primary-dark": "#7e1d3a",
+                        secondary: "#13322B",
+                        "secondary-dark": "#0e2520",
+                        "background-light": "#FFFCF7",
+                        "background-dark": "#1F2937",
+                        "text-light": "#333333",
+                        "text-dark": "#E5E7EB",
                         "surface-light": "#FFFFFF",
-                        "surface-dark": "#1F2937",
+                        "surface-dark": "#111827",
                         "border-light": "#DDDDDD",
                         "border-dark": "#374151",
                     },
                     fontFamily: {
                         display: ["Merriweather", "serif"],
-                        body: ["Noto Sans", "sans-serif"],
+                        body: ["Inter", "Noto Sans", "sans-serif"],
+                        sans: ["Inter", "Noto Sans", "sans-serif"],
                     },
                     borderRadius: {
-                        DEFAULT: "0.5rem",
+                        DEFAULT: "0.75rem",
                         'xl': '1rem',
                         '2xl': '1.5rem',
                     },
+                    boxShadow: {
+                        'soft': '0 10px 40px -10px rgba(0,0,0,0.15)',
+                    }
                 },
             },
         };

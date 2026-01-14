@@ -162,44 +162,53 @@ class KMLHandler {
         }
 
         const html = `
-            <div class="popup-content" style="font-family: 'Noto Sans', sans-serif; max-width: 250px;">
-                <h4 style="margin: 0 0 0.5rem 0; color: #9B2247; font-weight: bold; font-family: 'Merriweather', serif;">${props.name || 'Proyecto'}</h4>
-                <p style="margin: 0 0 0.75rem 0; font-size: 0.85rem; color: #666; line-height: 1.4;">${props.description || 'Proyecto sin descripción'}</p>
-                <div style="display: flex; gap: 0.5rem;">
-                    <button style="flex: 1; padding: 0.5rem; background: #1E5B4F; color: white; border: none; border-radius: 4px; cursor: pointer; font-size: 0.75rem; font-weight: 600;" 
-                        onclick="projectDetailModal.open({
-                            id: '${props.id || 'DEMO-001'}',
-                            name: '${props.name || 'Proyecto Demo'}',
-                            location: '${props.location || 'Ubicación'}',
-                            status: 'En Proceso',
-                            description: '${props.description || 'Descripción del proyecto'}',
-                            coordinates: {
-                                lat: ${centerLat},
-                                lng: ${centerLng}
-                            },
-                            specs: {
-                                'Capacidad': '150.5 MW',
-                                'Área': '420 Ha',
-                                'Inversión': '85.2M USD'
-                            },
-                            contact: {
-                                name: 'Responsable del Proyecto',
-                                company: 'Empresa Operadora'
-                            }
-                        })">
-                        ℹ️ Info
-                    </button>
-                    <button style="flex: 1; padding: 0.5rem; background: #9B2247; color: white; border: none; border-radius: 4px; cursor: pointer; font-size: 0.75rem; font-weight: 600;" 
-                        onclick="projectDetailModal.openAnalysis({
-                            id: '${props.id || 'DEMO-001'}',
-                            name: '${props.name || 'Proyecto Demo'}',
-                            coordinates: {
-                                lat: ${centerLat},
-                                lng: ${centerLng}
-                            }
-                        })">
-                        📊 Análisis
-                    </button>
+            <div class="leaflet-popup-refined">
+                <div class="popup-card">
+                    <div class="popup-header">
+                        <h2 class="popup-title">${props.name || 'Proyecto'}</h2>
+                        <button class="popup-close" onclick="this.closest('.leaflet-popup').remove()">
+                            <span class="material-icons-round">close</span>
+                        </button>
+                    </div>
+                    <p class="popup-description">${props.description || 'Proyecto sin descripción'}</p>
+                    <div class="popup-actions">
+                        <button class="popup-btn popup-btn-info" 
+                            onclick="projectDetailModal.open({
+                                id: '${props.id || 'DEMO-001'}',
+                                name: '${props.name || 'Proyecto Demo'}',
+                                location: '${props.location || 'Ubicación'}',
+                                status: 'En Proceso',
+                                description: '${props.description || 'Descripción del proyecto'}',
+                                coordinates: {
+                                    lat: ${centerLat},
+                                    lng: ${centerLng}
+                                },
+                                specs: {
+                                    'Capacidad': '150.5 MW',
+                                    'Área': '420 Ha',
+                                    'Inversión': '85.2M USD'
+                                },
+                                contact: {
+                                    name: 'Responsable del Proyecto',
+                                    company: 'Empresa Operadora'
+                                }
+                            })">
+                            <span class="material-icons-round">info</span>
+                            <span>Info</span>
+                        </button>
+                        <button class="popup-btn popup-btn-analysis" 
+                            onclick="projectDetailModal.openAnalysis({
+                                id: '${props.id || 'DEMO-001'}',
+                                name: '${props.name || 'Proyecto Demo'}',
+                                coordinates: {
+                                    lat: ${centerLat},
+                                    lng: ${centerLng}
+                                }
+                            })">
+                            <span class="material-icons-round">analytics</span>
+                            <span>Análisis</span>
+                        </button>
+                    </div>
                 </div>
             </div>
         `;
