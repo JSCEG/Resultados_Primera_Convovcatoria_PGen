@@ -962,6 +962,9 @@ class MobileInterface {
                 this.updateMobileLayersList();
                 this.showKMLStatus(`${geojson.features.length} features cargados`, 'success');
 
+                // Colapsar controles para ver el mapa
+                this.collapseBottomSheet();
+
             } catch (error) {
                 this.showKMLStatus('Error: ' + error.message, 'error');
             }

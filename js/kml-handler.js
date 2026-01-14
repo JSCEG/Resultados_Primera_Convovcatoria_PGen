@@ -55,6 +55,10 @@ class KMLHandler {
             }
         }
 
+        if (features.length === 0) {
+            throw new Error('No se encontraron geometrías válidas en el KML');
+        }
+
         return {
             type: 'FeatureCollection',
             features: features
@@ -72,28 +76,50 @@ class KMLHandler {
         let geometry = null;
         let type = null;
 
+        // Función auxiliar para leer listas de coordenadas con saltos de línea o espacios
+        const parseCoordinateList = (text) => {
+            return text
+                .trim()
+                .split(/\s+/) // soporta separador por espacios o saltos de línea
+                .filter(Boolean)
+                .map(c => c.split(',').slice(0, 2).map(Number))
+                .filter(pair => pair.length === 2 && pair.every(v => !Number.isNaN(v)));
+        };
+
         const point = placemark.querySelector('Point');
         const linestring = placemark.querySelector('LineString');
         const polygon = placemark.querySelector('Polygon');
 
         if (point) {
             const coords = point.querySelector('coordinates')?.textContent || '';
-            const [lng, lat] = coords.trim().split(',').map(Number);
-            geometry = { coordinates: [lng, lat], type: 'Point' };
+            const [lng, lat] = coords.trim().split(/[,\s]+/).slice(0, 2).map(Number);
+            if (!Number.isNaN(lng) && !Number.isNaN(lat)) {
+                geometry = { coordinates: [lng, lat], type: 'Point' };
+            }
             type = 'Point';
         } else if (linestring) {
             const coords = linestring.querySelector('coordinates')?.textContent || '';
-            const coordinates = coords.trim().split('\n').map(c =>
-                c.trim().split(',').slice(0, 2).map(Number)
-            );
-            geometry = { coordinates, type: 'LineString' };
+            const coordinates = parseCoordinateList(coords);
+            if (coordinates.length > 1) {
+                geometry = { coordinates, type: 'LineString' };
+            }
             type = 'LineString';
         } else if (polygon) {
-            const outerRing = polygon.querySelector('outerBoundaryIs coordinates')?.textContent || '';
-            const coordinates = [outerRing.trim().split('\n').map(c =>
-                c.trim().split(',').slice(0, 2).map(Number)
-            )];
-            geometry = { coordinates, type: 'Polygon' };
+            const outerRing = polygon.querySelector('outerBoundaryIs coordinates')?.textContent
+                || polygon.querySelector('LinearRing coordinates')?.textContent
+                || '';
+            const ring = parseCoordinateList(outerRing);
+            // cerrar anillo si hace falta
+            if (ring.length > 0) {
+                const first = ring[0];
+                const last = ring[ring.length - 1];
+                if (first[0] !== last[0] || first[1] !== last[1]) {
+                    ring.push([...first]);
+                }
+            }
+            if (ring.length > 3) {
+                geometry = { coordinates: [ring], type: 'Polygon' };
+            }
             type = 'Polygon';
         }
 

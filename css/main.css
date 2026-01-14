@@ -1057,7 +1057,7 @@ button {
     border-radius: 20px;
     box-shadow: var(--shadow-card);
     width: 100%;
-    max-width: 600px;
+    max-width: 480px;
     max-height: 90vh;
     overflow: hidden;
     display: flex;
