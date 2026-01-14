@@ -141,12 +141,32 @@ class KMLHandler {
      */
     createPopup(feature) {
         const props = feature.properties;
+        
+        // Calcular centro del feature
+        let centerLat, centerLng;
+        if (feature.geometry.type === 'Point') {
+            centerLng = feature.geometry.coordinates[0];
+            centerLat = feature.geometry.coordinates[1];
+        } else if (feature.geometry.type === 'Polygon') {
+            const coords = feature.geometry.coordinates[0];
+            const lats = coords.map(c => c[1]);
+            const lngs = coords.map(c => c[0]);
+            centerLat = (Math.max(...lats) + Math.min(...lats)) / 2;
+            centerLng = (Math.max(...lngs) + Math.min(...lngs)) / 2;
+        } else if (feature.geometry.type === 'LineString') {
+            const coords = feature.geometry.coordinates;
+            const lats = coords.map(c => c[1]);
+            const lngs = coords.map(c => c[0]);
+            centerLat = (Math.max(...lats) + Math.min(...lats)) / 2;
+            centerLng = (Math.max(...lngs) + Math.min(...lngs)) / 2;
+        }
+
         const html = `
-            <div class="popup-content">
-                <h4 class="font-bold text-primary mb-2">${props.name || 'Proyecto'}</h4>
-                <p class="text-xs text-gray-600 mb-3">${props.description || ''}</p>
+            <div class="popup-content" style="font-family: 'Noto Sans', sans-serif; max-width: 250px;">
+                <h4 style="margin: 0 0 0.5rem 0; color: #9B2247; font-weight: bold; font-family: 'Merriweather', serif;">${props.name || 'Proyecto'}</h4>
+                <p style="margin: 0 0 0.75rem 0; font-size: 0.85rem; color: #666; line-height: 1.4;">${props.description || 'Proyecto sin descripción'}</p>
                 <div style="display: flex; gap: 0.5rem;">
-                    <button class="popup-btn-info" style="flex: 1; padding: 0.5rem; background: #1E5B4F; color: white; border: none; border-radius: 4px; text-align: center; cursor: pointer; font-size: 0.75rem; font-weight: 600;" 
+                    <button style="flex: 1; padding: 0.5rem; background: #1E5B4F; color: white; border: none; border-radius: 4px; cursor: pointer; font-size: 0.75rem; font-weight: 600;" 
                         onclick="projectDetailModal.open({
                             id: '${props.id || 'DEMO-001'}',
                             name: '${props.name || 'Proyecto Demo'}',
@@ -154,8 +174,8 @@ class KMLHandler {
                             status: 'En Proceso',
                             description: '${props.description || 'Descripción del proyecto'}',
                             coordinates: {
-                                lat: ${feature.geometry.coordinates[1]},
-                                lng: ${feature.geometry.coordinates[0]}
+                                lat: ${centerLat},
+                                lng: ${centerLng}
                             },
                             specs: {
                                 'Capacidad': '150.5 MW',
@@ -167,20 +187,18 @@ class KMLHandler {
                                 company: 'Empresa Operadora'
                             }
                         })">
-                        <i class="material-icons-round" style="font-size: 0.9rem; vertical-align: middle;">info</i>
-                        <span style="margin-left: 0.25rem;">Información</span>
+                        ℹ️ Info
                     </button>
-                    <button class="popup-btn-analysis" style="flex: 1; padding: 0.5rem; background: var(--color-gobmx-guinda); color: white; border: none; border-radius: 4px; text-align: center; cursor: pointer; font-size: 0.75rem; font-weight: 600;" 
+                    <button style="flex: 1; padding: 0.5rem; background: #9B2247; color: white; border: none; border-radius: 4px; cursor: pointer; font-size: 0.75rem; font-weight: 600;" 
                         onclick="projectDetailModal.openAnalysis({
                             id: '${props.id || 'DEMO-001'}',
                             name: '${props.name || 'Proyecto Demo'}',
                             coordinates: {
-                                lat: ${feature.geometry.coordinates[1]},
-                                lng: ${feature.geometry.coordinates[0]}
+                                lat: ${centerLat},
+                                lng: ${centerLng}
                             }
                         })">
-                        <i class="material-icons-round" style="font-size: 0.9rem; vertical-align: middle;">analytics</i>
-                        <span style="margin-left: 0.25rem;">Análisis</span>
+                        📊 Análisis
                     </button>
                 </div>
             </div>
@@ -205,8 +223,14 @@ class KMLHandler {
                 {
                     type: 'Feature',
                     geometry: {
-                        type: 'Point',
-                        coordinates: [-106.6419, 28.6329] // Chihuahua
+                        type: 'Polygon',
+                        coordinates: [[
+                            [-106.7, 28.5],
+                            [-106.5, 28.5],
+                            [-106.5, 28.7],
+                            [-106.7, 28.7],
+                            [-106.7, 28.5]
+                        ]]
                     },
                     properties: {
                         id: 'PGEN-CHI-001',
@@ -218,8 +242,14 @@ class KMLHandler {
                 {
                     type: 'Feature',
                     geometry: {
-                        type: 'Point',
-                        coordinates: [-111.8910, 31.7922] // Sonora
+                        type: 'Polygon',
+                        coordinates: [[
+                            [-112.0, 31.6],
+                            [-111.7, 31.6],
+                            [-111.7, 31.9],
+                            [-112.0, 31.9],
+                            [-112.0, 31.6]
+                        ]]
                     },
                     properties: {
                         id: 'PGEN-SON-001',
@@ -231,8 +261,14 @@ class KMLHandler {
                 {
                     type: 'Feature',
                     geometry: {
-                        type: 'Point',
-                        coordinates: [-97.1428, 22.1505] // Veracruz
+                        type: 'Polygon',
+                        coordinates: [[
+                            [-97.3, 22.0],
+                            [-96.9, 22.0],
+                            [-96.9, 22.3],
+                            [-97.3, 22.3],
+                            [-97.3, 22.0]
+                        ]]
                     },
                     properties: {
                         id: 'PGEN-VER-001',

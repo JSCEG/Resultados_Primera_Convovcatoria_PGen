@@ -946,7 +946,7 @@ class MobileInterface {
 
             try {
                 const geojson = await window.kmlHandler.loadKML(file);
-                
+
                 const layerName = file.name.replace('.kml', '');
                 window.kmlHandler.addGeoJSON(geojson, layerName);
 
@@ -987,7 +987,69 @@ class MobileInterface {
             demoBtn.innerHTML = '<i class="bi bi-hourglass-split" style="animation: spin 1s linear infinite;"></i> Cargando...';
         }
 
-        const demoData = window.KMLHandler.createDemoData();
+        // Crear datos demo con polígonos cerrados
+        const demoData = {
+            type: 'FeatureCollection',
+            features: [
+                {
+                    type: 'Feature',
+                    geometry: {
+                        type: 'Polygon',
+                        coordinates: [[
+                            [-106.7, 28.5],
+                            [-106.5, 28.5],
+                            [-106.5, 28.7],
+                            [-106.7, 28.7],
+                            [-106.7, 28.5]
+                        ]]
+                    },
+                    properties: {
+                        id: 'PGEN-CHI-001',
+                        name: 'Planta Solar Chihuahua',
+                        location: 'Desierto del Chihuahua, Región Norte',
+                        description: 'Instalación de 350,000 paneles solares fotovoltaicos con seguidores a eje único.'
+                    }
+                },
+                {
+                    type: 'Feature',
+                    geometry: {
+                        type: 'Polygon',
+                        coordinates: [[
+                            [-112.0, 31.6],
+                            [-111.7, 31.6],
+                            [-111.7, 31.9],
+                            [-112.0, 31.9],
+                            [-112.0, 31.6]
+                        ]]
+                    },
+                    properties: {
+                        id: 'PGEN-SON-001',
+                        name: 'Parque Eólico Sonora',
+                        location: 'Llanura de Sonora, Región Noroeste',
+                        description: 'Instalación de 250 aerogeneradores de 5 MW cada uno.'
+                    }
+                },
+                {
+                    type: 'Feature',
+                    geometry: {
+                        type: 'Polygon',
+                        coordinates: [[
+                            [-97.3, 22.0],
+                            [-96.9, 22.0],
+                            [-96.9, 22.3],
+                            [-97.3, 22.3],
+                            [-97.3, 22.0]
+                        ]]
+                    },
+                    properties: {
+                        id: 'PGEN-VER-001',
+                        name: 'Central Geotérmica Veracruz',
+                        location: 'Campo Geotérmico, Región Sur',
+                        description: 'Desarrollo de campo geotérmico con 100 MW de capacidad instalada.'
+                    }
+                }
+            ]
+        };
 
         setTimeout(() => {
             window.kmlHandler.addGeoJSON(
