@@ -117,4 +117,18 @@ class NotificationSystem {
     info(title, message, options = {}) {
         return this.show({ ...options, type: 'info', title, message });
     }
+
+    /**
+     * Muestra un error con solo mensaje (para compatibilidad)
+     */
+    showError(message, options = {}) {
+        return this.error('Error', message, options);
+    }
+
+    /**
+     * Muestra una advertencia con solo mensaje (para compatibilidad)
+     */
+    showWarning(message, options = {}) {
+        return this.warning('Advertencia', message, options);
+    }
 }

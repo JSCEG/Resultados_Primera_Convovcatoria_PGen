@@ -140,6 +140,7 @@ class KMLHandler {
      */
     addGeoJSON(geojson, layerName, style) {
         const geoJsonLayer = L.geoJSON(geojson, {
+            pane: 'kmlPane', // Usar pane dedicado con z-index más alto
             style: style || this.defaultStyle,
             pointToLayer: (feature, latlng) => {
                 return L.circleMarker(latlng, {
@@ -200,15 +201,16 @@ class KMLHandler {
                     <div class="popup-actions">
                         <button class="popup-btn popup-btn-info" 
                             onclick="projectDetailModal.open({
-                                id: '${props.id || 'DEMO-001'}',
-                                name: '${props.name || 'Proyecto Demo'}',
-                                location: '${props.location || 'Ubicación'}',
+                                id: '${(props.id || 'DEMO-001').replace(/'/g, "\\'")}',
+                                name: '${(props.name || 'Proyecto Demo').replace(/'/g, "\\'")}',
+                                location: '${(props.location || 'Ubicación').replace(/'/g, "\\'")}',
                                 status: 'En Proceso',
-                                description: '${props.description || 'Descripción del proyecto'}',
+                                description: '${(props.description || 'Descripción del proyecto').replace(/'/g, "\\'").replace(/\n/g, " ")}',
                                 coordinates: {
                                     lat: ${centerLat},
                                     lng: ${centerLng}
                                 },
+                                geometry: ${JSON.stringify(feature.geometry).replace(/"/g, '&quot;')},
                                 specs: {
                                     'Capacidad': '150.5 MW',
                                     'Área': '420 Ha',
@@ -224,12 +226,13 @@ class KMLHandler {
                         </button>
                         <button class="popup-btn popup-btn-analysis" 
                             onclick="projectDetailModal.openAnalysis({
-                                id: '${props.id || 'DEMO-001'}',
-                                name: '${props.name || 'Proyecto Demo'}',
+                                id: '${(props.id || 'DEMO-001').replace(/'/g, "\\'")}',
+                                name: '${(props.name || 'Proyecto Demo').replace(/'/g, "\\'")}',
                                 coordinates: {
                                     lat: ${centerLat},
                                     lng: ${centerLng}
-                                }
+                                },
+                                geometry: ${JSON.stringify(feature.geometry).replace(/"/g, '&quot;')}
                             })">
                             <span class="material-icons-round">analytics</span>
                             <span>Análisis</span>

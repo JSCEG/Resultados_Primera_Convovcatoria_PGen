@@ -172,6 +172,51 @@ class KMLUploadPanel {
                     window.map.fitBounds(bounds, { padding: [50, 50] });
                 }
             }
+
+            // Iniciar Análisis Automático
+            if (window.globalLayerManager && window.turf) {
+                this.showStatus('Analizando capas relacionadas...', 'info');
+                
+                // Mostrar botón de reset
+                document.getElementById('resetAnalysisBtn').classList.remove('hidden');
+
+                // Combinar geometrías para crear un área de análisis única
+                // turf.combine devuelve un FeatureCollection con un feature MultiGeometry
+                const combined = turf.combine(geojson);
+                const analysisGeometry = combined.features[0];
+
+                // Transferir propiedades del KML original a la geometría de análisis
+                // para que GlobalLayerManager pueda mostrar el nombre y descripción
+                if (geojson.features && geojson.features.length > 0) {
+                    const firstProps = geojson.features[0].properties || {};
+                    analysisGeometry.properties = {
+                        name: layerName, // Usar nombre del archivo como fallback
+                        description: firstProps.description || `Archivo: ${file.name}`
+                    };
+                    
+                    // Si el primer feature tiene nombre, usarlo (muchos KMLs tienen un Placemark principal)
+                    if (firstProps.name) {
+                        analysisGeometry.properties.name = firstProps.name;
+                    }
+                }
+
+                if (analysisGeometry) {
+                    // Ejecutar análisis (asíncrono)
+                    window.globalLayerManager.performAnalysis(analysisGeometry)
+                        .then(results => {
+                            const count = results.layers.length;
+                            if (count > 0) {
+                                this.showStatus(`Análisis: ${count} capas relacionadas encontradas`, 'success');
+                            } else {
+                                this.showStatus('Análisis: No se encontraron capas relacionadas', 'info');
+                            }
+                        })
+                        .catch(err => {
+                            console.error('Error en análisis:', err);
+                            this.showStatus('Error en el análisis de capas', 'error');
+                        });
+                }
+            }
         } catch (error) {
             this.showStatus('Error: ' + error.message, 'error');
         }
@@ -233,5 +278,31 @@ class KMLUploadPanel {
     toggleCollapse() {
         const content = document.getElementById('panelContent');
         content.style.display = content.style.display === 'none' ? 'block' : 'none';
+    }
+
+    /**
+     * Resetea el análisis y limpia el mapa
+     */
+    resetAnalysis() {
+        // Limpiar capas KML del mapa
+        const layers = Object.keys(this.kmlHandler.layers);
+        layers.forEach(name => this.removeLayer(name));
+        
+        // Reset Global Layer Manager (salir de modo análisis)
+        if (window.globalLayerManager) {
+            window.globalLayerManager.exitAnalysisMode();
+            // Asegurar que todas las capas globales se apaguen o reseteen
+            Object.keys(window.globalLayerManager.layerStates).forEach(id => {
+                 window.globalLayerManager.toggleLayer(id, false);
+            });
+            window.globalLayerManager.refresh();
+        }
+
+        // Reset UI
+        document.getElementById('resetAnalysisBtn').classList.add('hidden');
+        document.getElementById('kmlInput').value = ''; // Limpiar input file
+        
+        // Mensaje
+        this.showStatus('Análisis reiniciado. Mapa limpio.', 'info');
     }
 }

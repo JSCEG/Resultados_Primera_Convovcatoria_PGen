@@ -158,21 +158,6 @@ document.addEventListener('DOMContentLoaded', function () {
 
     // Configuración de capas de mapa
     const layerConfigs = {
-        /* 'sener-azul': {
-            label: 'SENER Azul',
-            creator: () => createMapTilerLayer('0198a42c-5e08-77a1-9773-763ee4e12b32', 'personal', fallbackLight, 'SENER Azul'),
-            isMapTiler: true
-        }, */
-        'sener-light': {
-            label: 'SENER Light',
-            creator: () => createMapTilerLayer('0198a9af-dc7c-79d3-8316-a80767ad1d0f', 'amigo', fallbackLight, 'SENER Light'),
-            isMapTiler: true
-        },
-        /* 'sener-oscuro': {
-            label: 'SENER Oscuro',
-            creator: () => createMapTilerLayer('0198a9f0-f135-7991-aaec-bea71681556e', 'amigo', fallbackDark, 'SENER Oscuro'),
-            isMapTiler: true
-        }, */
         'carto-positron': {
             label: 'Positron (Claro)',
             creator: () => L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png', {
@@ -182,15 +167,7 @@ document.addEventListener('DOMContentLoaded', function () {
             }),
             exportable: true
         },
-        'carto-voyager': {
-            label: 'Voyager (Colores)',
-            creator: () => L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png', {
-                attribution: fallbackAttribution,
-                maxZoom: 19,
-                crossOrigin: 'anonymous'
-            }),
-            exportable: true
-        },
+        // 'carto-voyager' eliminado por errores 404/Aborted
         'esri-worldimagery': {
             label: 'Satélite (ESRI)',
             creator: () => L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', {

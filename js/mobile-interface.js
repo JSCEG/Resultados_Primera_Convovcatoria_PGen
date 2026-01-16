@@ -861,6 +861,8 @@ class MobileInterface {
 
                 // Función para actualizar clases de zoom
                 const updateZoomClasses = () => {
+                    if (typeof window.map.getZoom !== 'function') return; // Validación extra
+                    
                     const zoom = window.map.getZoom();
                     const mapContainer = window.map.getContainer();
 
@@ -875,8 +877,12 @@ class MobileInterface {
                     mapContainer.classList.add(`zoom-level-${Math.floor(zoom)}`);
                 };
 
-                window.map.on('zoomend', updateZoomClasses);
-                updateZoomClasses(); // Inicializar
+                if (typeof window.map.on === 'function') {
+                    window.map.on('zoomend', updateZoomClasses);
+                    updateZoomClasses(); // Inicializar
+                } else {
+                    console.warn('Map object exists but .on() is not a function. Retrying...');
+                }
             }
         }, 500);
     }
